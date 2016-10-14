@@ -1,2 +1,2 @@
-python setup.py install --user
+python setup.py install
 pause
