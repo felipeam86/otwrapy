@@ -46,8 +46,9 @@ def load_array(filename, compressed=False):
         with open(filename, 'rb') as fh:
             return pickle.load(fh)
 
+
 def dump_array(array, filename, compress=False):
-    """Dump an array to a (possibly compressed) file
+    """Dump an array to a (possibly compressed) file.
 
     Parameters
     ----------
@@ -66,6 +67,7 @@ def dump_array(array, filename, compress=False):
         with open(filename, 'wb') as fh:
             pickle.dump(array, fh, protocol=2)
 
+
 def safemakedirs(folder):
     """Make a directory without raising an error if it exists.
 
@@ -77,8 +79,9 @@ def safemakedirs(folder):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
+
 def create_logger(logfile, loglevel=None):
-    """Create a logger with a FileHandler at the given loglevel
+    """Create a logger with a FileHandler at the given loglevel.
 
     Parameters
     ----------
@@ -92,7 +95,7 @@ def create_logger(logfile, loglevel=None):
     if loglevel is None:
         loglevel = logging.DEBUG
 
-    logger = logging.getLogger()
+    logger = logging.getLogger('logger_otwrapy')
     logger.setLevel(loglevel)
 
     # ----------------------------------------------------------
@@ -112,7 +115,9 @@ def create_logger(logfile, loglevel=None):
 
     return logger
 
+
 class Debug(object):
+
     """Decorator that catches exceptions inside a function and logs them.
 
     A decorator used to protect functions so that exceptions are logged to a
@@ -171,8 +176,10 @@ class Debug(object):
 
         return func_debugged
 
+
 class NumericalMathFunctionDecorator(object):
-    """Convert an OpenTURNSPythonFunction into a NumericalMathFunction
+
+    """Convert an OpenTURNSPythonFunction into a NumericalMathFunction.
 
     This class is intended to be used as a decorator.
 
@@ -232,7 +239,8 @@ class NumericalMathFunctionDecorator(object):
             else:
                 func.__doc__ = self.doc
 
-            # Add the kwargs as attributes of the function for reference purposes.
+            # Add the kwargs as attributes of the function for reference
+            # purposes.
             func.__dict__.update(kwargs)
             return func
         # Keep the wrapper class as reference
@@ -241,6 +249,7 @@ class NumericalMathFunctionDecorator(object):
 
 
 class TempWorkDir(object):
+
     """Implement a context manager that creates a temporary working directory.
 
     Create a temporary working directory on `base_temp_work_dir` preceeded by
@@ -296,25 +305,28 @@ class TempWorkDir(object):
     I'm back to my project directory :
     /home/aguirre/otwrapy
     """
+
     def __init__(self, base_temp_work_dir=None, prefix='run-', cleanup=False,
-        transfer=None):
+                 transfer=None):
         self.dirname = mkdtemp(dir=base_temp_work_dir, prefix=prefix)
         self.cleanup = cleanup
         self.transfer = transfer
+
     def __enter__(self):
         self.curdir = os.getcwd()
         os.chdir(self.dirname)
         if self.transfer is not None:
             for file in self.transfer:
                 shutil.copy(file, self.dirname)
+
     def __exit__(self, type, value, traceback):
         os.chdir(self.curdir)
         if self.cleanup:
             shutil.rmtree(self.dirname)
 
 
-def _exec_sample_joblib(func, n_cpus):
-    """Return a function that executes a sample in parallel using joblib
+def _exec_sample_joblib(func, n_cpus, verbosity):
+    """Return a function that executes a sample in parallel using joblib.
 
     Parameters
     ----------
@@ -334,15 +346,17 @@ def _exec_sample_joblib(func, n_cpus):
         from joblib import Parallel, delayed
     except ImportError:
         from sklearn.externals.joblib import Parallel, delayed
+
     def _exec_sample(X):
-        Y = Parallel(n_jobs=n_cpus, verbose=10)(delayed(func)(x) for x in X)
+        Y = Parallel(n_jobs=n_cpus, verbose=verbosity)(
+            delayed(func)(x) for x in X)
         return ot.NumericalSample(Y)
 
     return _exec_sample
 
 
 def _exec_sample_multiprocessing(func, n_cpus):
-    """Return a function that executes a sample in parallel using multiprocessing
+    """Return a function that executes a sample in parallel using multiprocessing.
 
     Parameters
     ----------
@@ -358,23 +372,57 @@ def _exec_sample_multiprocessing(func, n_cpus):
     _exec_sample : Function or callable
         The parallelized funtion.
     """
-
-    import time
     def _exec_sample(X):
         from multiprocessing import Pool
         p = Pool(processes=n_cpus)
         rs = p.map_async(func, X)
         p.close()
-        while not rs.ready():
-            time.sleep(0.1)
+        return ot.NumericalSample(rs.get())
+    return _exec_sample
 
-        Y = np.vstack(rs.get())
-        return ot.NumericalSample(Y)
+
+def _exec_sample_pathos(func, n_cpus):
+    """Return a function that executes a sample in parallel using pathos.
+
+    Parameters
+    ----------
+    func : Function or calable
+        A callable python object, usually a function. The function should take
+        an input vector as argument and return an output vector.
+
+    n_cpus : int
+        Number of CPUs on which to distribute the function calls.
+
+    Returns
+    -------
+    _exec_sample : Function or callable
+        The parallelized funtion.
+    """
+    def _exec_sample(X):
+        from pathos.multiprocessing import ProcessingPool
+        try:
+            p = ProcessingPool(n_cpus)
+            X = np.array(X)
+            x = np.array_split(X, n_cpus)
+            pipe = []
+            for i in range(n_cpus):
+                pipe.append(p.apipe(func, x[i]))
+
+            rs = []
+            for i in range(n_cpus):
+                rs.append(pipe[i].get())
+    
+            rs = [item for sublist in rs for item in sublist]
+
+            return ot.NumericalSample(rs)
+        except ValueError:
+            # Get there if the chuck size left some single evaluations left
+            return func(X)
     return _exec_sample
 
 
 def _exec_sample_ipyparallel(func, n, p):
-    """Return a function that executes a sample in parallel using ipyparallel
+    """Return a function that executes a sample in parallel using ipyparallel.
 
     Parameters
     ----------
@@ -395,31 +443,32 @@ def _exec_sample_ipyparallel(func, n, p):
     rc = ipp.Client()
 
     return ot.PythonFunction(func_sample=lambda X:
-                rc[:].map_sync(func, X),
-                n=func.getInputDimension(),
-                p=func.getOutputDimension())
+                             rc[:].map_sync(func, X),
+                             n=func.getInputDimension(),
+                             p=func.getOutputDimension())
+
 
 @NumericalMathFunctionDecorator(enableCache=True)
 class Parallelizer(ot.OpenTURNSPythonFunction):
+
     """Parallelize a Wrapper using 'ipyparallel', 'joblib' or 'multiprocessing'.
 
     Parameters
     ----------
 
-    where : string (Optional)
-        Setup configuration according to where you run it.
+    wrapper : ot.NumericalMathFunction or instance of ot.OpenTURNSPythonFunction
+        openturns wrapper to be distributed
 
     backend : string (Optional)
-        Whether to parallelize using 'ipyparallel', 'joblib' or
+        Whether to parallelize using 'ipyparallel', 'joblib', pathos, or
         'multiprocessing'.
 
     n_cpus : int (Optional)
         Number of CPUs on which the simulations will be distributed. Needed Only
         if using 'joblib' or 'multiprocessing' as backend.
 
-    sleep : float (Optional)
-        Intentional delay (in seconds) to demonstrate the effect of
-        parallelizing.
+    verbosity : int (Optional)
+        verbose parameter when using 'joblib'. Default is 10.
 
     Examples
     --------
@@ -436,27 +485,30 @@ class Parallelizer(ot.OpenTURNSPythonFunction):
     Because Parallelize is decorated with :class:`NumericalMathFunctionDecorator`,
     :code:`model` is already an :class:`ot.NumericalMathFunction`.
     """
-    def __init__(self, wrapper, backend='multiprocessing', n_cpus=-1):
 
-        # -1 cpus means all available cpus
+    def __init__(self, wrapper, backend='multiprocessing', n_cpus=-1, verbosity=10):
+
+        # -1 cpus means all available cpus - 1 for the scheduler
         if n_cpus == -1:
             import multiprocessing
-            n_cpus = multiprocessing.cpu_count()
+            n_cpus = multiprocessing.cpu_count() - 1
 
         self.n_cpus = n_cpus
         self.wrapper = wrapper
-        # This configures how to run single point simulations on the model :
+        self.verbosity = verbosity
+        # This configures how to run single point simulations on the model:
         self._exec = self.wrapper
 
         ot.OpenTURNSPythonFunction.__init__(self,
-                self.wrapper.getInputDimension(),
-                self.wrapper.getOutputDimension())
+                                            self.wrapper.getInputDimension(),
+                                            self.wrapper.getOutputDimension())
 
         self.setInputDescription(self.wrapper.getInputDescription())
         self.setOutputDescription(self.wrapper.getOutputDescription())
 
-        assert backend in ['ipython', 'ipyparallel', 'multiprocessing',
-        'joblib'], "Unknown backend"
+        assert backend in ['ipython', 'ipyparallel',
+                           'multiprocessing', 'pathos',
+                           'joblib'], "Unknown backend"
 
         # This configures how to run samples on the model :
         if self.n_cpus == 1:
@@ -481,11 +533,12 @@ class Parallelizer(ot.OpenTURNSPythonFunction):
 
             if ipy_backend:
                 self._exec_sample = _exec_sample_ipyparallel(self.wrapper,
-                    self.getInputDimension(), self.getOutputDimension())
+                                                             self.getInputDimension(),
+                                                             self.getOutputDimension())
             else:
                 logging.warn('Using multiprocessing backend instead')
                 self._exec_sample = _exec_sample_multiprocessing(self.wrapper,
-                    self.n_cpus)
+                                                                 self.n_cpus)
 
         elif backend == 'joblib':
             # Check that joblib is installed
@@ -499,14 +552,20 @@ class Parallelizer(ot.OpenTURNSPythonFunction):
                 except ImportError:
                     joblib_backend = False
                     import logging
-                    logging.warn('ipyparallel package missing.')
+                    logging.warn('joblib package missing.')
 
             if joblib_backend:
-                self._exec_sample = _exec_sample_joblib(self.wrapper, self.n_cpus)
+                self._exec_sample = _exec_sample_joblib(self.wrapper,
+                                                        self.n_cpus,
+                                                        self.verbosity)
             else:
                 logging.warn('Using multiprocessing backend instead')
                 self._exec_sample = _exec_sample_multiprocessing(self.wrapper,
-                    self.n_cpus)
+                                                                 self.n_cpus)
 
         elif backend == 'multiprocessing':
-            self._exec_sample = _exec_sample_multiprocessing(self.wrapper, self.n_cpus)
+            self._exec_sample = _exec_sample_multiprocessing(
+                self.wrapper, self.n_cpus)
+
+        elif backend == 'pathos':
+            self._exec_sample = _exec_sample_pathos(self.wrapper, self.n_cpus)

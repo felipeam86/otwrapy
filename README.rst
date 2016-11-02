@@ -10,8 +10,9 @@ audience. Documentation is available
   `ot.NumericalMathFunction <http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalMathFunction.html#openturns.NumericalMathFunction>`_
   into  a parallel wrapper using either
   `multiprocessing <https://docs.python.org/2/library/multiprocessing.html>`_,
-  `ipyparallel <http://ipyparallel.readthedocs.io/en/latest/>`_ or
-  `joblib <https://pythonhosted.org/joblib/>`_.
+  `ipyparallel <http://ipyparallel.readthedocs.io/en/latest/>`_,
+  `joblib <https://pythonhosted.org/joblib/>`_ or
+  `pathos <https://pypi.python.org/pypi/pathos>`_.
 - A set of usefull tools that simply recurrent tasks when constructing code
   wrappers:
 

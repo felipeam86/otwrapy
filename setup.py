@@ -24,6 +24,7 @@ setup(
     extras_require = {
         'joblib':  ["joblib>=0.9.3"],
         'ipyparallel': ["ipyparallel>=5.0.1"],
+        'pathos': ["pathos>=0.2.0"]
     },
     author="Felipe Aguirre Martinez",
     author_email="aguirre@phimeca.com",
