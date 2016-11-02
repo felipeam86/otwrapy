@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to otwrapy’s documentation! &#8212; otwrapy  documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/Icon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="otwrapy  documentation" href="#" />
+    <link rel="next" title="Getting started" href="getting_started.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-otwrapy-s-documentation">
+<h1>Welcome to otwrapy&#8217;s documentation!<a class="headerlink" href="#welcome-to-otwrapy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><code class="code docutils literal"><span class="pre">otwrapy</span></code> is a collection of tools that simplify the task of wrapping
+external codes in a Python environment as well as parallelizing it. It is built
+on top of <a class="reference external" href="http://www.openturns.org">OpenTURNS</a>, with its users as the target
+audience. Documentation is available
+<a class="reference external" href="http://felipeam86.github.io/otwrapy/">here</a>. The module provides :</p>
+<ul class="simple">
+<li>A <code class="code docutils literal"><span class="pre">Parallelizer</span></code> class that converts any
+<a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalMathFunction.html#openturns.NumericalMathFunction">ot.NumericalMathFunction</a>
+into  a parallel wrapper using either
+<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html">multiprocessing</a>,
+<a class="reference external" href="http://ipyparallel.readthedocs.io/en/latest/">ipyparallel</a>,
+<a class="reference external" href="https://pythonhosted.org/joblib/">joblib</a> or
+<a class="reference external" href="https://pypi.python.org/pypi/pathos">pathos</a>.</li>
+<li>A set of usefull tools that simply recurrent tasks when constructing code
+wrappers:<ul>
+<li><code class="code docutils literal"><span class="pre">TempWorkDir</span></code>: Context manager that gracefully creates a temporary
+working directory. It handles errors and has the option to cleanup upon
+exit.</li>
+<li><code class="code docutils literal"><span class="pre">Debug</span></code>: Decorator that protects the decorated function into a
+try/except structure so that errors are logged. It is specially usefull
+when you launch your code in a non interactive environement.</li>
+<li><code class="code docutils literal"><span class="pre">load_array</span></code> and <code class="code docutils literal"><span class="pre">dump_array</span></code>: Used for efficiently create
+and load backups with the option to compress with gzip.</li>
+<li><code class="code docutils literal"><span class="pre">safemakedirs</span></code>: Create a directory without raising an exception if
+it exits.</li>
+<li><code class="code docutils literal"><span class="pre">create_logger</span></code>: Return a logger with a FileHandler at a given
+logging level.</li>
+</ul>
+</li>
+</ul>
+<p><code class="code docutils literal"><span class="pre">otwrapy</span></code> comes from the experience of wrapping a lot of
+different external codes at <a class="reference external" href="http://www.phimeca.com">Phimeca engineering</a>. We are a company specialized on
+uncertainty treatment and we assist our clients introducing the
+probabilistic dimension in their so far deterministic studies.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">While fully usable, otwrapy is still pre-1.0 software and has <strong>no</strong>
+backwards compatibility guarantees until the 1.0 release occurs! Please
+make sure to be carefull <strong>anytime you upgrade</strong>!</p>
+</div>
+<div class="section" id="table-of-contents">
+<h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#how-to-use-the-module">How to use the module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="beam_wrapper.html">Beam wrapper</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Documentation of the API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.Parallelizer.html">otwrapy.Parallelizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.TempWorkDir.html">otwrapy.TempWorkDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.Debug.html">otwrapy.Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.NumericalMathFunctionDecorator.html">otwrapy.NumericalMathFunctionDecorator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.dump_array.html">otwrapy.dump_array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.load_array.html">otwrapy.load_array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.safemakedirs.html">otwrapy.safemakedirs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_generated/otwrapy.create_logger.html">otwrapy.create_logger</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="#">
+    <img class="logo" src="_static/LogoPhiHaut.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Collection of tools that simplify the task of wrapping external codes in a Python environment. Proudly developed at <b><a href="http://www.phimeca.com">Phimeca</a></b></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=felipeam86&repo=otwrapy&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Documentation of the API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="getting_started.html" title="next chapter">Getting started</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/felipeam86/otwrapy" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-76867657-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>
