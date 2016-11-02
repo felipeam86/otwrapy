@@ -451,7 +451,7 @@ def _exec_sample_ipyparallel(func, n, p):
 @NumericalMathFunctionDecorator(enableCache=True)
 class Parallelizer(ot.OpenTURNSPythonFunction):
 
-    """Parallelize a Wrapper using 'ipyparallel', 'joblib' or 'multiprocessing'.
+    """Parallelize a Wrapper using 'ipyparallel', 'joblib', pathos or 'multiprocessing'.
 
     Parameters
     ----------
@@ -465,7 +465,7 @@ class Parallelizer(ot.OpenTURNSPythonFunction):
 
     n_cpus : int (Optional)
         Number of CPUs on which the simulations will be distributed. Needed Only
-        if using 'joblib' or 'multiprocessing' as backend.
+        if using 'joblib', pathos or 'multiprocessing' as backend.
 
     verbosity : int (Optional)
         verbose parameter when using 'joblib'. Default is 10.
@@ -480,7 +480,7 @@ class Parallelizer(ot.OpenTURNSPythonFunction):
     >>> model = otw.Parallelizer(Wrapper(), n_cpus=-1)
 
     :code:`model` will distribute calls to Wrapper() using multiprocessing and
-    as many CPUs as you have.
+    as many CPUs as you have minus one for the scheduler.
 
     Because Parallelize is decorated with :class:`NumericalMathFunctionDecorator`,
     :code:`model` is already an :class:`ot.NumericalMathFunction`.
